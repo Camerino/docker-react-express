@@ -33,30 +33,40 @@ router.get('/', function(req, res, next) {
 
 router.post('/', (req, res, next) => {
 
-  const user = new User({
-      _id: new mongoose.Types.ObjectId(),
-      name: req.body.name,
-  });
+  if(isNaN( req.body.name )) {
+    const user = new User({
+        _id: new mongoose.Types.ObjectId(),
+        name: req.body.name,
+    });
+  
+    user
+        .save()
+        .then( result => {
+            console.log(result);
+            res.status(200).json({
+                message: "User Created",
+                User:{
+                    name: result.name,
+                    _id: result._id,
+                }
+            });
+            
+        }).catch( error => {
+            console.log(error);
+            res.status(500).json({
+                error: error
+            });
+            
+        });
 
-  user
-      .save()
-      .then( result => {
-          console.log(result);
-          res.status(200).json({
-              message: "User Created",
-              User:{
-                  name: result.name,
-                  _id: result._id,
-              }
-          });
-          
-      }).catch( error => {
-          console.log(error);
-          res.status(500).json({
-              error: error
-          });
-          
-      });
+  }else {
+    console.log('userName cannot be pure number');
+        res.status(500).json({
+            error: 'userName cannot be pure number'
+        });
+    }
+
+  
 
  
 });
